@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">FitChallenge</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in</string>
+    <string name="action_register">Register new user</string>
+    <string name="action_logout">Logout</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="back">Go Back</string>
+    <string name="welcome">Welcome!</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="logged_out">You are now logged out</string>
+    <string name="no_account">Do not have an account? Register</string>
+    <string name="here">Here</string>
 </resources>

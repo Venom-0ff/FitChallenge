@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.workoutwizards.fitchallenge"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.workoutwizards.fitchallenge"
@@ -39,7 +39,9 @@ android {
 }
 
 dependencies {
-
+    implementation(platform("com.google.firebase:firebase-bom:32.6.0"))
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.9.0")
