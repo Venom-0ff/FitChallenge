@@ -14,4 +14,9 @@
     <string name="logged_out">You are now logged out</string>
     <string name="no_account">Do not have an account? Register</string>
     <string name="here">Here</string>
+    <string name="choose_date_and_time">Choose Date and Time</string>
+    <string-array name="workout_types">
+        <item>Cardio</item>
+        <item>Sets &amp; Reps</item>
+    </string-array>
 </resources>
