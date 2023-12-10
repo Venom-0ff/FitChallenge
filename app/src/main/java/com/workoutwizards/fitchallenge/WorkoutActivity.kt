@@ -24,7 +24,7 @@ class WorkoutActivity : AppCompatActivity() {
     private lateinit var binding: ActivityWorkoutBinding
     private lateinit var recyclerViewManager: RecyclerView.LayoutManager
     private val db = Firebase.firestore
-    private lateinit var workouts:MutableList<WorkoutItem>
+    private lateinit var workouts: MutableList<WorkoutItem>
     private var selectedDate = Calendar.getInstance()
     private var selectedTime = Calendar.getInstance()
 
@@ -35,9 +35,25 @@ class WorkoutActivity : AppCompatActivity() {
         recyclerViewManager = LinearLayoutManager(applicationContext)
         binding.recyclerView.layoutManager = recyclerViewManager
         binding.recyclerView.setHasFixedSize(true)
-        workouts = emptyList<WorkoutItem>().toMutableList()
+
+        db.collection("users")
+            .document(MainActivity.user.uid)
+            .collection("workouts")
+            .get()
+            .addOnSuccessListener { result ->
+                workouts = result.toObjects(WorkoutItem::class.java)
+                if (workouts.isNotEmpty()) {
+                    binding.recyclerView.adapter = WorkoutRecyclerAdapter(
+                        workouts
+                    )
+                }
+            }
+            .addOnFailureListener {
+                workouts = emptyList<WorkoutItem>().toMutableList()
+                binding.recyclerView.adapter = WorkoutRecyclerAdapter(workouts)
+            }
+
         val fab = binding.addWorkout
-        binding.recyclerView.adapter = WorkoutRecyclerAdapter(workouts)
         fab.setOnClickListener {
             showAddItemDialog()
         }
@@ -88,7 +104,9 @@ class WorkoutActivity : AppCompatActivity() {
                     "type" to spinnerWorkoutType.selectedItem.toString(),
                     "date_time" to Date(combinedDateTime.timeInMillis).toString()
                 )
-                db.collection("workouts").document(MainActivity.user.uid).collection("workouts")
+                db.collection("users")
+                    .document(MainActivity.user.uid)
+                    .collection("workouts")
                     .add(workout)
 
                 var typeString = spinnerWorkoutType.selectedItem.toString()
