@@ -14,7 +14,10 @@
     <string name="logged_out">You are now logged out</string>
     <string name="no_account">Do not have an account? Register</string>
     <string name="here">Here</string>
+    <string name="workout_history">Workout History</string>
+    <string name="logout_warning">Are you sure you want to log out?</string>
     <string name="choose_date_and_time">Choose Date and Time</string>
+    <string name="team_info">Workout Wizards - 2023</string>
     <string-array name="workout_types">
         <item>Cardio</item>
         <item>Sets &amp; Reps</item>

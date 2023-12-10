@@ -31,6 +31,11 @@ class WorkoutActivity : AppCompatActivity() {
         fab.setOnClickListener {
             showAddItemDialog()
         }
+
+        val fab2 = binding.returnToMenu
+        fab2.setOnClickListener {
+            finish()
+        }
     }
 
     private fun showAddItemDialog() {
