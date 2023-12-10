@@ -1,5 +1,6 @@
 package com.workoutwizards.fitchallenge
 
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,7 +8,9 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.workoutwizards.fitchallenge.model.WorkoutItem
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerView
 .Adapter<WorkoutRecyclerAdapter.ViewHolder>() {
@@ -42,16 +45,13 @@ class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerV
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         if (dataSet.isNotEmpty()) {
             if (dataSet[position].date_time!!.isNotBlank()) {
-                val dateFormat = SimpleDateFormat("HH:mm, dd MMM, yyyy", Locale.getDefault())
-                viewHolder.textViewDateTime.text = dateFormat.format(dataSet[position].date_time)
-                /*viewHolder.textViewDateTime.text = LocalDateTime.parse(
-                    dataSet[position].date_time, DateTimeFormatter.ISO_LOCAL_DATE_TIME
-                ).format(
-                    DateTimeFormatter.ofLocalizedDateTime(
-                        FormatStyle.SHORT,
-                        FormatStyle.SHORT
-                    )
-                )*/
+                val est = TimeZone.getTimeZone("EST")
+                val sourceFormat = SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy")
+                val destFormat = SimpleDateFormat("dd-MMM-YYYY HH:mm aa")
+                sourceFormat.timeZone = est
+                val convertedDate = sourceFormat.parse(dataSet[position].date_time)
+                val formattedDate = SimpleDateFormat("HH:mm, dd MMM, yyyy").format(convertedDate)
+                viewHolder.textViewDateTime.text = formattedDate
             }
 
             viewHolder.textViewType.text = dataSet[position].type

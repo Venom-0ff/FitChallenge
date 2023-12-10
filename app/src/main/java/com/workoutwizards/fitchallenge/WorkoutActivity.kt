@@ -9,9 +9,12 @@ import android.widget.Spinner
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 import com.workoutwizards.fitchallenge.databinding.ActivityWorkoutBinding
+import com.workoutwizards.fitchallenge.model.WorkoutItem
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -19,7 +22,9 @@ import java.util.Locale
 
 class WorkoutActivity : AppCompatActivity() {
     private lateinit var binding: ActivityWorkoutBinding
+    private lateinit var recyclerViewManager: RecyclerView.LayoutManager
     private val db = Firebase.firestore
+    private lateinit var workouts:MutableList<WorkoutItem>
     private var selectedDate = Calendar.getInstance()
     private var selectedTime = Calendar.getInstance()
 
@@ -27,7 +32,12 @@ class WorkoutActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWorkoutBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        recyclerViewManager = LinearLayoutManager(applicationContext)
+        binding.recyclerView.layoutManager = recyclerViewManager
+        binding.recyclerView.setHasFixedSize(true)
+        workouts = emptyList<WorkoutItem>().toMutableList()
         val fab = binding.addWorkout
+        binding.recyclerView.adapter = WorkoutRecyclerAdapter(workouts)
         fab.setOnClickListener {
             showAddItemDialog()
         }
@@ -78,8 +88,15 @@ class WorkoutActivity : AppCompatActivity() {
                     "type" to spinnerWorkoutType.selectedItem.toString(),
                     "date_time" to Date(combinedDateTime.timeInMillis).toString()
                 )
-                db.collection("users").document(MainActivity.user.uid).collection("workouts")
+                db.collection("workouts").document(MainActivity.user.uid).collection("workouts")
                     .add(workout)
+
+                var typeString = spinnerWorkoutType.selectedItem.toString()
+                var dateString = Date(combinedDateTime.timeInMillis).toString()
+                var workoutListItem = WorkoutItem(typeString, dateString)
+
+                workouts.add(workoutListItem)
+                binding.recyclerView.adapter = WorkoutRecyclerAdapter(workouts)
             }
             .setNegativeButton("Cancel", null)
             .create()
