@@ -8,8 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.workoutwizards.fitchallenge.model.WorkoutItem
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import java.util.TimeZone
 
 class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerView
