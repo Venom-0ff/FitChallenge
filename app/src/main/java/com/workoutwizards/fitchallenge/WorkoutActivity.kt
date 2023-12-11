@@ -58,7 +58,7 @@ class WorkoutActivity : AppCompatActivity() {
             showAddItemDialog()
         }
 
-        val fab2 = binding.returnToMenu
+        val fab2 = binding.returnToMenuW
         fab2.setOnClickListener {
             finish()
         }
