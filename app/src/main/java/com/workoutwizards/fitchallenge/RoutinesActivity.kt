@@ -16,5 +16,21 @@ class RoutinesActivity  : AppCompatActivity(){
             finish()
         }
 
+        /*
+        *
+        * TODO: create a way to add several SetsAndRepsItem(s) into a neat recyclerview
+        *
+        * ideas:
+        * - could create a spinner that is incrementable ('select workout:' spinnerHere) and then
+        * display a recyclerview of SetsAndRepsItem(s) based on the selected spinner value
+        *
+        * - find a way to nest dialogues into creating more and more items
+        *
+        * - display all of the info into a condensed card item
+        *
+        * guys im so tired, its 3am rn
+        * sorry ill work on it more when i wake up
+        *
+        * */
     }
 }
