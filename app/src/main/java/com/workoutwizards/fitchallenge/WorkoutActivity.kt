@@ -161,10 +161,7 @@ class WorkoutActivity : AppCompatActivity() {
                 )
 
 
-                /*  Changed to accomodate either a cardio workout or a 'sets and reps' workout
-                *
-                *  TODO: change RecyclerAdapter to reflect changes
-                * */
+                /*  Changed to accomodate either a cardio workout or a 'sets and reps' workout */
 
 
 

@@ -2,13 +2,15 @@ package com.workoutwizards.fitchallenge
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.firestore
 import com.workoutwizards.fitchallenge.databinding.ActivityRoutinesBinding
 import com.workoutwizards.fitchallenge.model.SetsAndRepsItem
 import com.workoutwizards.fitchallenge.databinding.DialogAddRoutineItemBinding
@@ -16,26 +18,34 @@ import com.workoutwizards.fitchallenge.databinding.DialogAddRoutineItemBinding
 class RoutinesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRoutinesBinding
+    private lateinit var routineList: MutableList<MutableList<SetsAndRepsItem>>
     private lateinit var setsAndRepsList: MutableList<SetsAndRepsItem>
-    private val db = Firebase.firestore
+    private val db = FirebaseFirestore.getInstance()
     private lateinit var recyclerViewManager: RecyclerView.LayoutManager
+    private lateinit var setsAndRepsAdapter: SetsAndRepsRecyclerAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityRoutinesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         recyclerViewManager = LinearLayoutManager(applicationContext)
 
-        //set recyclerView
+        // set recyclerView
         binding.recyclerViewRoutine.layoutManager = recyclerViewManager
-
+        setsAndRepsAdapter = SetsAndRepsRecyclerAdapter(emptyList()) // Initialize the adapter with an empty list
+        binding.recyclerViewRoutine.adapter = setsAndRepsAdapter
 
         setupSpinner()
 
         binding.addRoutine.setOnClickListener {
-            // Implement logic to increment the spinner or create a new list
-            // Add the logic to save the list to Firebase Firestore
+            // Create a new list of SetsAndRepsItem
+            val newRoutineList = mutableListOf<SetsAndRepsItem>()
 
+            // TODO: Add logic to populate the newRoutineList based on user input or spinner selection
 
+            // Update the RecyclerViewRoutine and save the newRoutineList to Firebase Firestore
+            setsAndRepsAdapter.updateData(newRoutineList)
+            saveRoutineToFirestore(newRoutineList)
         }
 
         binding.addRoutineItem.setOnClickListener {
@@ -52,9 +62,34 @@ class RoutinesActivity : AppCompatActivity() {
     }
 
     private fun setupSpinner() {
-        // Implement spinner setup logic
-        // Populate spinner with routine names or provide options to create a new routine
-        // Update the RecyclerViewRoutine accordingly
+        val spinnerItems: MutableList<String> = mutableListOf()
+
+        routineList?.let {
+            // Add incrementing numbers based on the size of routineList
+            for (i in 1..it.size) {
+                spinnerItems.add("Routine $i")
+            }
+        }
+
+        // Assuming you have a spinner widget in your layout with the id spinnerRoutine
+        val spinner = binding.spinnerRoutine
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinnerItems)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        // Set a listener to handle spinner item selection
+        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                // Handle the selected routine based on position
+                val selectedRoutine = routineList?.get(position)
+                // Update the RecyclerViewRoutine accordingly
+                setsAndRepsAdapter.updateData(selectedRoutine ?: emptyList())
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Handle when nothing is selected, if needed
+            }
+        }
     }
 
     private fun showAddRoutineItemDialog() {
@@ -79,7 +114,54 @@ class RoutinesActivity : AppCompatActivity() {
     }
 
     private fun fetchDataFromFirestore() {
-        // Implement logic to fetch data from Firebase Firestore
-        // Update the RecyclerViewRoutine accordingly
+        // Get the user's document reference in Firebase Firestore
+        val userDocRef = db.collection("users").document(MainActivity.user.uid)
+
+        // Fetch data from the "routines" collection under the user's document
+        userDocRef.collection("routines").get()
+            .addOnSuccessListener { querySnapshot ->
+                // Clear the existing list
+                setsAndRepsList.clear()
+
+                // Iterate through the documents in the "routines" collection
+                for (document in querySnapshot.documents) {
+                    // Retrieve the "routineList" field from each document
+                    val routineList = document.get("routineList") as List<Map<String, Any>>?
+
+                    // Convert the routineList to SetsAndRepsItem and add it to the setsAndRepsList
+                    routineList?.let {
+                        for (item in it) {
+                            val exercise = SetsAndRepsItem(
+                                item["exerciseName"].toString(),
+                                item["sets"].toString(),
+                                item["reps"].toString(),
+                            )
+                            setsAndRepsList.add(exercise)
+                        }
+                    }
+                }
+
+                // Update the RecyclerViewRoutine with the fetched data
+                setsAndRepsAdapter.updateData(setsAndRepsList)
+            }
+            .addOnFailureListener { e ->
+                // Handle failure
+                setsAndRepsList = emptyList<SetsAndRepsItem>().toMutableList()
+            }
+    }
+
+    private fun saveRoutineToFirestore(newRoutineList: List<SetsAndRepsItem>) {
+        // Get the user's document reference in Firebase Firestore
+        val userDocRef = db.collection("users").document(MainActivity.user.uid)
+
+        // Add the newRoutineList to the "routines" collection under the user's document
+        userDocRef.collection("routines").add(mapOf("routineList" to newRoutineList))
+            .addOnSuccessListener { documentReference ->
+                // Handle success, if needed
+            }
+            .addOnFailureListener { e ->
+                // Handle failure, if needed
+                Toast.makeText(this, "Failed to save routine to Firestore", Toast.LENGTH_SHORT).show()
+            }
     }
 }
