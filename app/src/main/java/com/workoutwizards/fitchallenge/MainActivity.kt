@@ -14,7 +14,8 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.workoutwizards.fitchallenge.databinding.ActivityMainBinding
-import com.workoutwizards.fitchallenge.model.WorkoutItem
+import com.workoutwizards.fitchallenge.model.CardioItem
+import com.workoutwizards.fitchallenge.model.SetsAndRepsItem
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -107,6 +108,9 @@ class MainActivity : AppCompatActivity() {
         dialog.show()
     }
 
+    fun onUpdateGoalsButtonClick(view: View) {
+
+    }
     private fun showLogoffDialog() {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_logout, null)
 

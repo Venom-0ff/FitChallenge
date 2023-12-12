@@ -27,7 +27,7 @@ class RegisterActivity : AppCompatActivity() {
                 }
 
                 TextUtils.isEmpty(binding.password.text.toString().trim { it <= ' ' }) -> {
-                    Toast.makeText(this, "Please enter email", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this, "Please enter password", Toast.LENGTH_SHORT).show()
                 }
 
                 else -> {
@@ -53,7 +53,7 @@ class RegisterActivity : AppCompatActivity() {
                                 Log.w("TAG", "createUserWithEmail:failure", task.exception)
                                 Toast.makeText(
                                     baseContext,
-                                    "Authentication failed.",
+                                    "Registration failed\nPassword must be more than 6 characters.",
                                     Toast.LENGTH_SHORT,
                                 ).show()
                                 println("Authentication failed.")

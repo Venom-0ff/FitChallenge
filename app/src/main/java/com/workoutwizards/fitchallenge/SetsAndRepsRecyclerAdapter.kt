@@ -6,12 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.workoutwizards.fitchallenge.model.WorkoutItem
+import com.workoutwizards.fitchallenge.model.SetsAndRepsItem
+
 import java.text.SimpleDateFormat
 import java.util.TimeZone
 
-class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerView
-.Adapter<WorkoutRecyclerAdapter.ViewHolder>() {
+class SetsAndRepsRecyclerAdapter(private val dataSet: List<SetsAndRepsItem>) : RecyclerView
+.Adapter<SetsAndRepsRecyclerAdapter.ViewHolder>() {
 
     /**
      * Provide a reference to the type of views that you are using
@@ -20,10 +21,16 @@ class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerV
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var textViewDateTime: TextView
         var textViewType: TextView
+        var textViewExerciseName: TextView
+        var textViewSets: TextView
+        var textViewReps: TextView
 
         init {
             textViewType = view.findViewById(R.id.textViewTypeWorkout)
             textViewDateTime = view.findViewById(R.id.textViewDateTimeWorkout)
+            textViewExerciseName = view.findViewById(R.id.textViewExerciseName)
+            textViewSets = view.findViewById(R.id.textViewReps)
+            textViewReps = view.findViewById(R.id.textViewSets)
         }
     }
 
@@ -32,7 +39,7 @@ class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerV
         // Create a new view, which defines the UI of the list item
         val view =
             LayoutInflater.from(viewGroup.context).inflate(
-                R.layout.recycler_workout_item,
+                R.layout.recycler_repsandsets_item,
                 viewGroup, false
             )
 
@@ -53,6 +60,9 @@ class WorkoutRecyclerAdapter(private val dataSet: List<WorkoutItem>) : RecyclerV
             }
 
             viewHolder.textViewType.text = dataSet[position].type
+            viewHolder.textViewExerciseName.text = dataSet[position].type
+            viewHolder.textViewSets.text = "Sets: ${dataSet[position].sets}"
+            viewHolder.textViewReps.text = "Reps: ${dataSet[position].reps}"
         }
     }
 
