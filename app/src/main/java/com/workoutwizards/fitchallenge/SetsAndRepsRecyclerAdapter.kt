@@ -70,4 +70,11 @@ class SetsAndRepsRecyclerAdapter(private val dataSet: List<SetsAndRepsItem>) : R
     override fun getItemCount(): Int {
         return dataSet.size
     }
+    fun updateData(newData: List<SetsAndRepsItem>) {
+        // Update the dataset and notify the adapter about the changes
+        (dataSet as MutableList).clear()
+        (dataSet as MutableList).addAll(newData)
+        notifyDataSetChanged()
+    }
+
 }
