@@ -5,15 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.get
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.firestore.FirebaseFirestore
 import com.workoutwizards.fitchallenge.databinding.ActivityRoutinesBinding
 import com.workoutwizards.fitchallenge.model.SetsAndRepsItem
 import com.workoutwizards.fitchallenge.databinding.DialogAddRoutineItemBinding
+import java.util.Date
 
 class RoutinesActivity : AppCompatActivity() {
 
@@ -22,7 +26,7 @@ class RoutinesActivity : AppCompatActivity() {
     private lateinit var setsAndRepsList: MutableList<SetsAndRepsItem>
     private val db = FirebaseFirestore.getInstance()
     private lateinit var recyclerViewManager: RecyclerView.LayoutManager
-    private lateinit var setsAndRepsAdapter: SetsAndRepsRecyclerAdapter
+    private lateinit var routineRecyclerAdapter: RoutineRecyclerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,30 +34,36 @@ class RoutinesActivity : AppCompatActivity() {
         setContentView(binding.root)
         recyclerViewManager = LinearLayoutManager(applicationContext)
 
+
+        routineList = emptyList<MutableList<SetsAndRepsItem>>().toMutableList()
+        setsAndRepsList = emptyList<SetsAndRepsItem>().toMutableList()
+
         // set recyclerView
         binding.recyclerViewRoutine.layoutManager = recyclerViewManager
-        setsAndRepsAdapter = SetsAndRepsRecyclerAdapter(emptyList()) // Initialize the adapter with an empty list
-        binding.recyclerViewRoutine.adapter = setsAndRepsAdapter
+        routineRecyclerAdapter = RoutineRecyclerAdapter(emptyList()) // Initialize the adapter with an empty list
+        binding.recyclerViewRoutine.adapter = routineRecyclerAdapter
+
+
+        // Fetch and display data from Firebase Firestore on activity startup
+        fetchDataFromFirestore()
 
         setupSpinner()
 
         binding.addRoutine.setOnClickListener {
             // Create a new list of SetsAndRepsItem
             val newRoutineList = mutableListOf<SetsAndRepsItem>()
-
+            routineList.add(newRoutineList)
             // TODO: Add logic to populate the newRoutineList based on user input or spinner selection
 
-            // Update the RecyclerViewRoutine and save the newRoutineList to Firebase Firestore
-            setsAndRepsAdapter.updateData(newRoutineList)
-            saveRoutineToFirestore(newRoutineList)
+            //Re-setup the spinner
+            setupSpinner()
         }
 
         binding.addRoutineItem.setOnClickListener {
             showAddRoutineItemDialog()
         }
 
-        // Fetch and display data from Firebase Firestore on activity startup
-        fetchDataFromFirestore()
+
 
         val fab = binding.returnToMenuR
         fab.setOnClickListener {
@@ -71,7 +81,6 @@ class RoutinesActivity : AppCompatActivity() {
             }
         }
 
-        // Assuming you have a spinner widget in your layout with the id spinnerRoutine
         val spinner = binding.spinnerRoutine
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, spinnerItems)
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -80,10 +89,8 @@ class RoutinesActivity : AppCompatActivity() {
         // Set a listener to handle spinner item selection
         spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                // Handle the selected routine based on position
-                val selectedRoutine = routineList?.get(position)
                 // Update the RecyclerViewRoutine accordingly
-                setsAndRepsAdapter.updateData(selectedRoutine ?: emptyList())
+                binding.recyclerViewRoutine.adapter = RoutineRecyclerAdapter(routineList[binding.spinnerRoutine.selectedItemPosition])
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -103,6 +110,19 @@ class RoutinesActivity : AppCompatActivity() {
                 // Implement logic to add the item to the current list
                 // Update the RecyclerViewRoutine accordingly
                 // Add the logic to save the updated list to Firebase Firestore
+
+                var typeString = "Sets and Reps"
+                var dateString = ""
+                var exerciseNameString = dialogBinding.editTextExerciseName.text.toString()
+                var setsString = dialogBinding.editTextSets.text.toString()
+                var repsString = dialogBinding.editTextReps.text.toString()
+                var setsAndRepsItem = SetsAndRepsItem(typeString, dateString, exerciseNameString, setsString, repsString )
+
+                // add to the list inside the routine list
+                routineList[binding.spinnerRoutine.selectedItemPosition].add(setsAndRepsItem)
+
+                binding.recyclerViewRoutine.adapter = RoutineRecyclerAdapter(routineList[binding.spinnerRoutine.selectedItemPosition])
+
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
@@ -141,8 +161,6 @@ class RoutinesActivity : AppCompatActivity() {
                     }
                 }
 
-                // Update the RecyclerViewRoutine with the fetched data
-                setsAndRepsAdapter.updateData(setsAndRepsList)
             }
             .addOnFailureListener { e ->
                 // Handle failure
