@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80614197433",
+    "project_id": "info-5013-managing",
+    "storage_bucket": "info-5013-managing.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80614197433:android:745e1959fe57f95ac9f368",
+        "android_client_info": {
+          "package_name": "com.workoutwizards.fitchallenge"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBbAE5tS-S9ynQ67XtgC3A1ADGhfRTeCTs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
