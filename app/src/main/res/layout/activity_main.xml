@@ -131,6 +131,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:backgroundTint="#107897"
+        android:onClick="onUpdateGoalsButtonClick"
         android:text="Update Daily Steps"
         app:cornerRadius="12dp"
         app:layout_constraintStart_toStartOf="parent"
