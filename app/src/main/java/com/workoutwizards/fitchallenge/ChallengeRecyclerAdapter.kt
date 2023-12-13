@@ -4,16 +4,19 @@ package com.workoutwizards.fitchallenge
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.workoutwizards.fitchallenge.model.ChallengeItem
-import com.workoutwizards.fitchallenge.model.SetsAndRepsItem
 
-import java.text.SimpleDateFormat
-import java.util.TimeZone
+interface UpdateListener {
+    fun onUpdateClicked(position: Int, newDistance: String)
+}
 
 class ChallengeRecyclerAdapter(private val dataSet: List<ChallengeItem>) : RecyclerView
 .Adapter<ChallengeRecyclerAdapter.ViewHolder>() {
+    var updateListener: UpdateListener? = null
 
     /**
      * Provide a reference to the type of views that you are using
@@ -24,12 +27,22 @@ class ChallengeRecyclerAdapter(private val dataSet: List<ChallengeItem>) : Recyc
         var textViewDistance: TextView
         var textViewStartDate: TextView
         var textViewEndDate: TextView
+        var editTextDistanceRan: EditText
+        var buttonUpdateDistance: Button
 
         init {
             textViewChallengeName = view.findViewById(R.id.textViewChallengeName)
             textViewDistance = view.findViewById(R.id.textViewDistance)
             textViewStartDate = view.findViewById(R.id.textViewStartDate)
             textViewEndDate = view.findViewById(R.id.textViewEndDate)
+            editTextDistanceRan = view.findViewById(R.id.editTextDistanceRan)
+            buttonUpdateDistance = view.findViewById(R.id.buttonUpdateDistance)
+
+            buttonUpdateDistance.setOnClickListener {
+                val position = adapterPosition
+                val newDistance = editTextDistanceRan.text.toString()
+                updateListener?.onUpdateClicked(position, newDistance)
+            }
         }
     }
 
