@@ -14,8 +14,6 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
 import com.workoutwizards.fitchallenge.databinding.ActivityMainBinding
-import com.workoutwizards.fitchallenge.model.CardioItem
-import com.workoutwizards.fitchallenge.model.SetsAndRepsItem
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -27,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         user = Firebase.auth.currentUser!!
 
-        binding.textViewUser.text = "Welcome " + intent.getStringExtra("email")
+        binding.textViewUser.text = "Welcome " + user.email
 
         val fab = binding.logoff
         fab.setOnClickListener {
@@ -35,7 +33,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         db.collection("users")
-            .document(MainActivity.user.uid)
+            .document(user.uid)
             .collection("steps")
             .get()
             .addOnSuccessListener { result ->
@@ -136,7 +134,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         db.collection("users")
-                            .document(MainActivity.user.uid)
+                            .document(user.uid)
                             .collection("steps")
                             .add(data)
                     }
