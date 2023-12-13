@@ -15,3 +15,10 @@ data class SetsAndRepsItem(
     var reps: String = ""
 
 )
+
+data class ChallengeItem(
+    var challenge_name: String, //Mostly here for storing in Firebase
+    var distance: String,
+    var start_date: String,
+    var end_date: String,
+)
