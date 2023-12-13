@@ -19,7 +19,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
-class ChallengesActivity : AppCompatActivity(){
+class ChallengesActivity : AppCompatActivity(), UpdateListener {
     private lateinit var binding: ActivityChallengesBinding
     private var selectedDateStart = Calendar.getInstance()
     private var selectedTimeStart = Calendar.getInstance()
@@ -46,6 +46,7 @@ class ChallengesActivity : AppCompatActivity(){
         // set recyclerView
         binding.recyclerViewChallenges.layoutManager = recyclerViewManager
         challengeRecyclerAdapter = ChallengeRecyclerAdapter(emptyList()) // Initialize the adapter with an empty list
+        challengeRecyclerAdapter.updateListener = this  // Set up listener for update button
         binding.recyclerViewChallenges.adapter = challengeRecyclerAdapter
 
 
@@ -56,6 +57,21 @@ class ChallengesActivity : AppCompatActivity(){
         binding.addChallenge.setOnClickListener {
             showAddChallengeItemDialog()
         }
+    }
+
+    override fun onUpdateClicked(position: Int, newDistance: String) {
+        val updatedDistance = (challengeItemList[position].distance.toFloat() - newDistance.toFloat()).toString()
+        challengeItemList[position].distance = updatedDistance
+
+        val updatedChallengeItem = ChallengeItem(
+            challengeItemList[position].challenge_name,
+            updatedDistance,
+            challengeItemList[position].start_date,
+            challengeItemList[position].end_date
+        )
+
+        binding.recyclerViewChallenges.adapter = ChallengeRecyclerAdapter(challengeItemList)
+        saveChallengeToFirestore(updatedChallengeItem)
     }
 
     private fun showAddChallengeItemDialog() {
@@ -99,12 +115,12 @@ class ChallengesActivity : AppCompatActivity(){
                     selectedTimeEnd.get(Calendar.MINUTE)
                 )
 
-                var challengeNameString = dialogBinding.editTextChallengeName.text.toString()
-                var distanceString = dialogBinding.editTextChallengeDistance.text.toString()
-                var startDateString = Date(combinedDateTimeStart.timeInMillis).toString()
-                var endDateString = Date(combinedDateTimeEnd.timeInMillis).toString()
+                val challengeNameString = dialogBinding.editTextChallengeName.text.toString()
+                val distanceString = dialogBinding.editTextChallengeDistance.text.toString().toFloat().toString()
+                val startDateString = Date(combinedDateTimeStart.timeInMillis).toString()
+                val endDateString = Date(combinedDateTimeEnd.timeInMillis).toString()
 
-                var challengeItem = ChallengeItem(challengeNameString,distanceString, startDateString, endDateString)
+                val challengeItem = ChallengeItem(challengeNameString, distanceString, startDateString, endDateString)
 
                 // add to the list inside the challenge list
                 challengeItemList.add(challengeItem)
@@ -229,12 +245,16 @@ class ChallengesActivity : AppCompatActivity(){
             .addOnSuccessListener {result ->
                 challengeItemList = result.toObjects(ChallengeItem::class.java)
                 if (challengeItemList.isNotEmpty()) {
-                    binding.recyclerViewChallenges.adapter = ChallengeRecyclerAdapter(challengeItemList)
+                    challengeRecyclerAdapter = ChallengeRecyclerAdapter(challengeItemList) // Initialize the adapter with an empty list
+                    challengeRecyclerAdapter.updateListener = this  // Set up listener for update button
+                    binding.recyclerViewChallenges.adapter = challengeRecyclerAdapter
                 }
             }
             .addOnFailureListener {
-               challengeItemList = emptyList<ChallengeItem>().toMutableList()
-                binding.recyclerViewChallenges.adapter = ChallengeRecyclerAdapter(challengeItemList)
+                challengeItemList = emptyList<ChallengeItem>().toMutableList()
+                challengeRecyclerAdapter = ChallengeRecyclerAdapter(challengeItemList) // Initialize the adapter with an empty list
+                challengeRecyclerAdapter.updateListener = this  // Set up listener for update button
+                binding.recyclerViewChallenges.adapter = challengeRecyclerAdapter
 
                 Toast.makeText(this, "No challenges yet", Toast.LENGTH_SHORT).show()
             }
