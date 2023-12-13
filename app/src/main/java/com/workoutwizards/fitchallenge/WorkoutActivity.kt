@@ -165,55 +165,71 @@ class WorkoutActivity : AppCompatActivity() {
 
 
 
-                // IF A CARDIO ITEM
+                // IF *NOT* A CARDIO ITEM
                 if(spinnerWorkoutType.selectedItem.toString() == "Cardio") {
                     val workout = hashMapOf(
                         "type" to spinnerWorkoutType.selectedItem.toString(),
                         "date_time" to Date(combinedDateTime.timeInMillis).toString(),
-                        "distance" to dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint).findViewById<EditText>(R.id.editTextDistance).text.toString(),
-                        "cardio_time" to dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint).findViewById<EditText>(R.id.editTextTime).text.toString()
+                        "distance" to dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint)
+                            .findViewById<EditText>(R.id.editTextDistance).text.toString(),
+                        "cardio_time" to dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint)
+                            .findViewById<EditText>(R.id.editTextTime).text.toString()
                     )
                     db.collection("users")
                         .document(MainActivity.user.uid)
-                        .collection( "cardio")
+                        .collection("cardio")
                         .add(workout)
 
                     var typeString = spinnerWorkoutType.selectedItem.toString()
                     var dateString = Date(combinedDateTime.timeInMillis).toString()
-                    var exerciseNameString = dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint).findViewById<EditText>(R.id.editTextDistance).text.toString()
-                    var setsString = dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint).findViewById<EditText>(R.id.editTextTime).text.toString()
-                    var setsAndRepsItem = SetsAndRepsItem(typeString, dateString, exerciseNameString, setsString)
+                    var distanceString =
+                        dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint)
+                            .findViewById<EditText>(R.id.editTextDistance).text.toString()
+                    var cardioTimeString =
+                        dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint)
+                            .findViewById<EditText>(R.id.editTextTime).text.toString()
+                    var cardioListItem =
+                        CardioItem(typeString, dateString, distanceString, cardioTimeString)
 
-                    setsAndRepsList.add(setsAndRepsItem)
+                    cardioList.add(cardioListItem)
                 }
                 else
                 {
                     val workout = hashMapOf(
                         "type" to spinnerWorkoutType.selectedItem.toString(),
                         "date_time" to Date(combinedDateTime.timeInMillis).toString(),
-                        "exercise_name" to dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint).findViewById<EditText>(R.id.editTextExerciseName).text.toString(),
-                        "sets" to dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint).findViewById<EditText>(R.id.editTextSets).text.toString(),
-                        "reps" to dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint).findViewById<EditText>(R.id.editTextReps).text.toString(),
+                        "exercise_name" to dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint)
+                            .findViewById<EditText>(R.id.editTextExerciseName).text.toString(),
+                        "sets" to dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint)
+                            .findViewById<EditText>(R.id.editTextSets).text.toString(),
+                        "reps" to dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint)
+                            .findViewById<EditText>(R.id.editTextReps).text.toString(),
                     )
                     db.collection("users")
                         .document(MainActivity.user.uid)
-                        .collection( "setsandreps")
+                        .collection("setsandreps")
                         .add(workout)
-
                     var typeString = spinnerWorkoutType.selectedItem.toString()
                     var dateString = Date(combinedDateTime.timeInMillis).toString()
-                    var distanceString = dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint).findViewById<EditText>(R.id.editTextDistance).text.toString()
-                    var cardioTimeString = dialogView.findViewById<ConstraintLayout>(R.id.cardioConstraint).findViewById<EditText>(R.id.editTextTime).text.toString()
-                    var cardioListItem = CardioItem(typeString, dateString, distanceString, cardioTimeString)
+                    var exerciseNameString =
+                        dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint)
+                            .findViewById<EditText>(R.id.editTextExerciseName).text.toString()
+                    var setsString =
+                        dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint)
+                            .findViewById<EditText>(R.id.editTextSets).text.toString()
+                    var repsString =
+                        dialogView.findViewById<ConstraintLayout>(R.id.setsAndRepsConstraint)
+                            .findViewById<EditText>(R.id.editTextReps).text.toString()
+                    var setsAndRepsItem = SetsAndRepsItem(
+                        typeString,
+                        dateString,
+                        exerciseNameString,
+                        setsString,
+                        repsString
+                    )
 
-                    cardioList.add(cardioListItem)
+                    setsAndRepsList.add(setsAndRepsItem)
                 }
-
-
-
-
-
-
 
                 binding.recyclerViewCardio.adapter = CardioRecyclerAdapter(cardioList)
                 binding.recyclerViewSetsAndReps.adapter = SetsAndRepsRecyclerAdapter(setsAndRepsList)
